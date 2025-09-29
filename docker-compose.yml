@@ -1,0 +1,10 @@
+services:
+  streamlit:
+    build: .
+    container_name: ride_3d_viewer
+    ports:
+      - "8501:8501" # Streamlit
+      - "8000:8000" # local HTTP server
+    volumes:
+      - .:/app
+    restart: unless-stopped

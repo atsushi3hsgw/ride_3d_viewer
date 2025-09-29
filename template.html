@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CZML Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/cesium@1.133.1/Build/Cesium/Cesium.js"></script>
+    <style>
+        @import url(https://cdn.jsdelivr.net/npm/cesium@1.133.1/Build/Cesium/Widgets/widgets.css);
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body, #cesiumContainer {
+            width: 100%; 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+
+    <script>
+        const czmlData = __CZML_DATA__;
+        Cesium.Ion.defaultAccessToken = '__ACCESS_TOKEN__';
+        
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            terrain: Cesium.Terrain.fromWorldTerrain({
+                requestWaterMask: true,
+                requestVertexNormals: true,
+            }),
+        });
+        Cesium.CzmlDataSource.load(czmlData).then(dataSource => {
+            viewer.dataSources.add(dataSource);
+
+            const positions = [];
+            const coords = czmlData[1].position.cartographicDegrees;
+            for (let i = 1; i < coords.length; i += 4) {
+                positions.push(Cesium.Cartesian3.fromDegrees(coords[i], coords[i + 1], coords[i + 2]));
+            }
+
+            viewer.entities.add({
+                polyline: {
+                    positions: positions,
+                    width: 5,
+                    material: new Cesium.PolylineGlowMaterialProperty({
+                        glowPower: 0.3,
+                        color: Cesium.Color.CYAN.withAlpha(0.8)
+                    }),
+                    clampToGround: true
+                }
+            });
+
+            const boundingSphere = Cesium.BoundingSphere.fromPoints(positions);
+            viewer.camera.viewBoundingSphere(boundingSphere, new Cesium.HeadingPitchRange(0, -1.0, boundingSphere.radius * 2.5));
+            viewer.clock.shouldAnimate = true;
+        });
+    </script>
+</body>
+</html>
