@@ -32,6 +32,33 @@ This project allows you to upload a Garmin FIT file, convert it to CZML format, 
 
 ---
 
+## Cesium Ion Access Token
+
+This project uses CesiumJS to render 3D terrain and animations. To access Cesium's global terrain and imagery services, you need a Cesium Ion access token.
+
+### 1. How to get a token
+
+- Sign up at [Cesium Ion](https://cesium.com/ion/)
+
+- Go to your dashboard and create a new access token
+
+- Copy the token string
+
+### 2. How to use it
+
+- Option A: `.env` file (for local development)
+
+```bash
+CESIUM_TOKEN=your_token_here
+```
+
+- Option B: st.secrets
+
+```toml
+# .streamlit/secrets.toml
+CESIUM_TOKEN = "your_token_here"
+```
+
 ## Docker Setup
 
 ### 1. Build and start the container
