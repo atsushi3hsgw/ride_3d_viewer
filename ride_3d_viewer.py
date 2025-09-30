@@ -69,7 +69,12 @@ logger = setup_logger("RideAnimationGenerator")
 if "viewer" not in st.session_state:
     try:
         cesium_token = os.getenv("CESIUM_TOKEN") or st.secrets["CESIUM_TOKEN"]
-        viewer = RideViewerManager(token=st.secrets["CESIUM_TOKEN"])
+    except Exception as e:
+        st.warning(f"Fail to get CESIUM_TOKEN: {e}")
+        cesium_token = ""
+    
+    try:
+        viewer = RideViewerManager(token=cesium_token)
         st.session_state["viewer"] = viewer
     except Exception as e:
         st.error(f"Failed to initialize RideViewerManager: {e}")

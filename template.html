@@ -24,7 +24,10 @@
 
     <script>
         const czmlData = __CZML_DATA__;
-        Cesium.Ion.defaultAccessToken = '__ACCESS_TOKEN__';
+        const accessToken = '__ACCESS_TOKEN__'
+        if(accessToken.length > 0) {
+            Cesium.Ion.defaultAccessToken = accessToken;
+        }
         
         const viewer = new Cesium.Viewer("cesiumContainer", {
             terrain: Cesium.Terrain.fromWorldTerrain({
