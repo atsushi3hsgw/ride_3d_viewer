@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CZML Viewer</title>
+    <title>Ride 3D Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/cesium@1.133.1/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(https://cdn.jsdelivr.net/npm/cesium@1.133.1/Build/Cesium/Widgets/widgets.css);
@@ -47,7 +47,7 @@
             viewer.entities.add({
                 polyline: {
                     positions: positions,
-                    width: 5,
+                    width: 10,
                     material: new Cesium.PolylineGlowMaterialProperty({
                         glowPower: 0.3,
                         color: Cesium.Color.CYAN.withAlpha(0.8)
@@ -56,8 +56,28 @@
                 }
             });
 
+            /*
             const boundingSphere = Cesium.BoundingSphere.fromPoints(positions);
             viewer.camera.viewBoundingSphere(boundingSphere, new Cesium.HeadingPitchRange(0, -1.0, boundingSphere.radius * 2.5));
+            */
+
+            /*
+             The camera tracks the rider
+            */
+            const offset = new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(-30), 3000);
+            const postRenderHandler = function () {
+                const position = entity.position.getValue(viewer.clock.currentTime);
+                if (position) {
+                    viewer.camera.lookAt(position, offset);
+                    setTimeout(() => {
+                        viewer.scene.postRender.removeEventListener(postRenderHandler);
+                    }, 500);
+                }
+            };
+            viewer.scene.postRender.addEventListener(postRenderHandler);
+
+            const entity = dataSource.entities.getById("ride");
+            viewer.trackedEntity = entity;
             viewer.clock.shouldAnimate = true;
         });
     </script>

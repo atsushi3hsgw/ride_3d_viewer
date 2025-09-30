@@ -1,4 +1,4 @@
-# FIT to CZML Ride Viewer
+# Ride 3D Viewer
 
 This project allows you to upload a Garmin FIT file, convert it to CZML format, and visualize your ride in 3D using CesiumJS. Built with Streamlit and designed for local use, it provides a simple and elegant way to explore your cycling data.
 
