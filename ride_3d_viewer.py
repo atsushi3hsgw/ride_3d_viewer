@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import json
 import os
 import uuid
@@ -15,6 +14,7 @@ class RideViewerManager:
         self.port = port
         self.token = token
         self.server = None
+        self.html_content = None
         os.makedirs(self.output_dir, exist_ok=True)
         self._start_server_once()
 
@@ -46,8 +46,15 @@ class RideViewerManager:
 
         with open(path, "w", encoding="utf-8") as f:
             f.write(html)
-
+        
+        self.html_content = html
         return f"http://localhost:{self.port}/{filename}"
+
+    def get_html_content(self):
+        if self.html_content is None:
+            with open("template.html", "r", encoding="utf-8") as f:
+                self.html_content = f.read()
+        return self.html_content
 
 def setup_logger(name=__name__):
     logger = logging.getLogger(name)
@@ -95,5 +102,9 @@ if uploaded_file:
         logger.info(f"Generated HTML URL: {url}")
         st.success("3D ride visualization generated successfully!")
         st.markdown(f"[show this ride.]({url})", unsafe_allow_html=True)
+        # CesiumJS doesn't work because Streamlit runs HTML under the iframe sandbox,
+        # which restricts the WebGL/Worker/Blob required by Cesium.
+        # html_content = viewer.get_html_content()
+        # st.components.v1.html(html_content, height=600, scrolling=True)
     except Exception as e:
         st.error(f"Error: {e}")
